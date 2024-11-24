@@ -1,4 +1,4 @@
-package day01
+package aoc2023
 
 import (
 	"bufio"
@@ -8,10 +8,7 @@ import (
 	"strings"
 )
 
-type Aoc2023Day01 struct {
-}
-
-func (d1 *Aoc2023Day01) Part1(f *os.File) int {
+func Part1(f *os.File) int {
 	sum := 0
 
 	scanner := bufio.NewScanner(f)
@@ -64,7 +61,7 @@ for each char
 take first and last of decoded string
 */
 
-func (d1 *Aoc2023Day01) Part2(f *os.File) int {
+func Part2(f *os.File) int {
 	numMap := map[string]string{
 		"one":   "1",
 		"two":   "2",
@@ -102,21 +99,4 @@ func (d1 *Aoc2023Day01) Part2(f *os.File) int {
 	}
 
 	return sum
-}
-
-func (d1 *Aoc2023Day01) Run() error {
-	input, err := os.Open("input.txt")
-	if err != nil {
-		return err
-	}
-	defer input.Close()
-
-	d1.Part1(input)
-	d1.Part2(input)
-
-	return nil
-}
-
-func (d1 *Aoc2023Day01) Name() string {
-	return "AOC 2023 Day 01"
 }

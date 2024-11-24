@@ -1,7 +1,8 @@
 package main
 
 import (
-	"coding-challenge-runner/aoc/2023/day01"
+	aoc2023 "coding-challenge-runner/pkg/aoc/2023"
+	"flag"
 	"fmt"
 	"time"
 )
@@ -12,11 +13,16 @@ type Runnable interface {
 }
 
 func main() {
-	aoc2023 := []Runnable{
-		&day01.Aoc2023Day01{},
+	name := flag.String("name", "", "Name of problem to run; runs all problems if omitted")
+
+	challenges := []Runnable{
+		&aoc2023.Day01{},
 	}
 
-	for _, p := range aoc2023 {
+	for _, p := range challenges {
+		if *name != "" && *name != p.Name() {
+			continue
+		}
 		start := time.Now()
 		fmt.Printf("Running problem %s...", p.Name())
 		p.Run()
