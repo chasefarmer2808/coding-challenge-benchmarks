@@ -30,7 +30,7 @@ func Test2023(t *testing.T) {
 			part1:     day02.Part1,
 			part2:     day02.Part2,
 			p1Val:     2207,
-			p2Val:     0,
+			p2Val:     62241,
 		},
 	}
 
