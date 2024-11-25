@@ -1,7 +1,8 @@
 package aoc
 
 import (
-	aoc2023 "coding-challenge-runner/pkg/aoc/2023/day01"
+	"coding-challenge-runner/pkg/aoc/2023/day01"
+	"coding-challenge-runner/pkg/aoc/2023/day02"
 	"io"
 	"os"
 	"testing"
@@ -19,10 +20,17 @@ func Test2023(t *testing.T) {
 	cases := []DayCase{
 		{
 			inputFile: "./2023/day01/input.txt",
-			part1:     aoc2023.Part1,
-			part2:     aoc2023.Part2,
+			part1:     day01.Part1,
+			part2:     day01.Part2,
 			p1Val:     55816,
 			p2Val:     54980,
+		},
+		{
+			inputFile: "./2023/day02/input.txt",
+			part1:     day02.Part1,
+			part2:     day02.Part2,
+			p1Val:     2207,
+			p2Val:     0,
 		},
 	}
 

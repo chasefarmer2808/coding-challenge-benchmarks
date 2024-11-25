@@ -1,6 +1,8 @@
 package aoc
 
-import "os"
+import (
+	"os"
+)
 
 type Runnable interface {
 	Part1(f *os.File) int
