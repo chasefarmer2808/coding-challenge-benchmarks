@@ -3,6 +3,7 @@ package aoc
 import (
 	"coding-challenge-runner/pkg/aoc/2023/day01"
 	"coding-challenge-runner/pkg/aoc/2023/day02"
+	"coding-challenge-runner/pkg/aoc/2023/day03"
 	"io"
 	"os"
 	"testing"
@@ -55,5 +56,26 @@ func Test2023(t *testing.T) {
 		if p2 != c.p2Val {
 			t.Errorf("part 2 failed. expected %v but got %v", c.p2Val, p2)
 		}
+	}
+}
+
+func Test2023Day03(t *testing.T) {
+	inputFile := "./2023/day03/input.txt"
+	expectedP1 := 539590
+	expectedP2 := 0
+	f, err := os.Open(inputFile)
+	if err != nil {
+		t.Errorf("cannot open input file %s; %s", inputFile, err.Error())
+	}
+	defer f.Close()
+
+	p1 := day03.Part1(f)
+	if p1 != expectedP1 {
+		t.Errorf("part 1 failed. expected %v but got %v", expectedP1, p1)
+	}
+
+	p2 := day03.Part2(f)
+	if p2 != expectedP2 {
+		t.Errorf("part 2 failed. expected %v but got %v", expectedP2, p2)
 	}
 }
