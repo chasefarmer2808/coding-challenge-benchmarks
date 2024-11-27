@@ -62,7 +62,7 @@ func Test2023(t *testing.T) {
 func Test2023Day03(t *testing.T) {
 	inputFile := "./2023/day03/input.txt"
 	expectedP1 := 539590
-	expectedP2 := 0
+	expectedP2 := 80703636
 	f, err := os.Open(inputFile)
 	if err != nil {
 		t.Errorf("cannot open input file %s; %s", inputFile, err.Error())
@@ -72,6 +72,11 @@ func Test2023Day03(t *testing.T) {
 	p1 := day03.Part1(f)
 	if p1 != expectedP1 {
 		t.Errorf("part 1 failed. expected %v but got %v", expectedP1, p1)
+	}
+
+	_, err = f.Seek(0, io.SeekStart)
+	if err != nil {
+		t.Errorf("failed to rewind file; %s", err.Error())
 	}
 
 	p2 := day03.Part2(f)
