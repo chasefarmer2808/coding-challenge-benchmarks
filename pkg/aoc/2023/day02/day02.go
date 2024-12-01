@@ -12,7 +12,7 @@ const MAX_RED = 12
 const MAX_GREEN = 13
 const MAX_BLUE = 14
 
-func Part1(f *os.File) int {
+func Part1(f *os.File) int64 {
 	sum, i := 0, 0
 	var colorGroup = regexp.MustCompile(`\d+\s+(red|green|blue)`)
 
@@ -42,10 +42,10 @@ outer:
 		// Else, got a good game
 		sum += i
 	}
-	return sum
+	return int64(sum)
 }
 
-func Part2(f *os.File) int {
+func Part2(f *os.File) int64 {
 	sum := 0
 	var colorGroup = regexp.MustCompile(`\d+\s+(red|green|blue)`)
 
@@ -75,7 +75,7 @@ func Part2(f *os.File) int {
 		power := minR * minG * minB
 		sum += power
 	}
-	return sum
+	return int64(sum)
 }
 
 func parseColorToken(token string) (int, string) {

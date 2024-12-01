@@ -10,7 +10,7 @@ import (
 // How to store schematic?
 // double char array or array of strings?
 
-func Part1(f *os.File) int {
+func Part1(f *os.File) int64 {
 	var schematic []string
 	sum := 0
 
@@ -55,10 +55,10 @@ func Part1(f *os.File) int {
 		}
 	}
 
-	return sum
+	return int64(sum)
 }
 
-func Part2(f *os.File) int {
+func Part2(f *os.File) int64 {
 	// Need a map of gear coords to list of numbers it touches
 	// Parse input as in part 1.  When found number, look around and see if it touches a gear
 	// If it does, store the coord of the gear and the number
@@ -110,7 +110,7 @@ func Part2(f *os.File) int {
 		}
 	}
 
-	return sum
+	return int64(sum)
 }
 
 type coord struct {

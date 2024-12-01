@@ -17,11 +17,11 @@ type Day struct {
 
 type Part struct {
 	partFunc        PartFunc
-	expectedVal     int
-	expectedTestVal int
+	expectedVal     int64
+	expectedTestVal int64
 }
 
-var days = []Day{
+var days2023 = []Day{
 	{
 		inputFile:     "./2023/day01/input.txt",
 		testInputFile: "./2023/day01/input_test.txt",
@@ -73,34 +73,44 @@ var days = []Day{
 }
 
 func Test2023(t *testing.T) {
-	for i, d := range days {
-		runDay(d, i+1, t)
+	for i, d := range days2023 {
+		RunDay(d, i+1, false, t)
 	}
 }
 
 func Test2023Day01(t *testing.T) {
-	runDay(days[0], 1, t)
+	RunDay(days2023[0], 1, false, t)
 }
 
 func Test2023Day02(t *testing.T) {
-	runDay(days[1], 2, t)
+	RunDay(days2023[1], 2, false, t)
 }
 
 func Test2023Day03(t *testing.T) {
-	runDay(days[2], 3, t)
+	RunDay(days2023[2], 3, false, t)
 }
 
-func runDay(d Day, i int, t *testing.T) {
-	f, err := os.Open(d.inputFile)
+func RunDay(d Day, i int, useTest bool, t *testing.T) {
+	inputFile := d.inputFile
+	if useTest {
+		inputFile = d.testInputFile
+	}
+
+	f, err := os.Open(inputFile)
 	if err != nil {
-		t.Errorf("cannot open input file %s; %s", d.inputFile, err.Error())
+		t.Errorf("cannot open input file %s; %s", inputFile, err.Error())
 	}
 	defer f.Close()
 
 	for j, p := range d.parts {
+		expected := p.expectedVal
+		if useTest {
+			expected = p.expectedTestVal
+		}
+
 		soln := p.partFunc(f)
-		if soln != p.expectedVal {
-			t.Errorf("failed for day %d part %d; expected %d but got %d", i, j+1, p.expectedVal, soln)
+		if soln != expected {
+			t.Errorf("failed for day %d part %d; expected %d but got %d", i, j+1, expected, soln)
 		}
 
 		_, err = f.Seek(0, io.SeekStart)

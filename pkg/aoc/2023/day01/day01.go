@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func Part1(f *os.File) int {
+func Part1(f *os.File) int64 {
 	sum := 0
 
 	scanner := bufio.NewScanner(f)
@@ -35,7 +35,7 @@ func Part1(f *os.File) int {
 		sum += i
 	}
 
-	return sum
+	return int64(sum)
 }
 
 /*
@@ -61,7 +61,7 @@ for each char
 take first and last of decoded string
 */
 
-func Part2(f *os.File) int {
+func Part2(f *os.File) int64 {
 	numMap := map[string]string{
 		"one":   "1",
 		"two":   "2",
@@ -98,5 +98,5 @@ func Part2(f *os.File) int {
 		sum += num
 	}
 
-	return sum
+	return int64(sum)
 }
