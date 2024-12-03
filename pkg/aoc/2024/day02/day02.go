@@ -56,7 +56,7 @@ func Part2(f *os.File) int64 {
 
 		for i := range report {
 			sub := slices.Delete(slices.Clone(report), i, i+1)
-			bl := getBadLevel(sub)
+			bl = getBadLevel(sub)
 			if bl == nil {
 				safeCount++
 				fmt.Println("safe")
