@@ -7,9 +7,12 @@ import (
 	"unicode/utf8"
 )
 
-type node struct {
-	c         rune
-	neighbors []node
+type crossword []string
+
+func (cw crossword) at(row, col int, dir direction) byte {
+	r := row + dir.Offset()[0]
+	c := col + dir.Offset()[1]
+	return cw[r][c]
 }
 
 func Part1(f *os.File) int64 {
@@ -23,8 +26,8 @@ func Part1(f *os.File) int64 {
 
 	for i, l := range cw {
 		for j, c := range l {
-			if search("XMAS", c, i, j, unknown, cw) {
-				found++
+			if res := search("XMAS", c, i, j, unknown, cw); res > 0 {
+				found += int64(res)
 				fmt.Printf("found %d!\n", found)
 			}
 		}
@@ -34,7 +37,20 @@ func Part1(f *os.File) int64 {
 }
 
 func Part2(f *os.File) int64 {
-	return 0
+	var found int64 = 0
+	cw := parseCrossword(f)
+
+	for i, l := range cw {
+		for j, c := range l {
+			if c == 'A' {
+				if isCrossMas(i, j, cw) {
+					found++
+				}
+			}
+		}
+	}
+
+	return found
 }
 
 func parseCrossword(f *os.File) []string {
@@ -109,15 +125,16 @@ func (d direction) Offset() []int {
 	}
 }
 
-func search(target string, c rune, row, col int, dir direction, crossword []string) bool {
+func search(target string, c rune, row, col int, dir direction, crossword []string) int {
 	fmt.Printf("searching for %s; curr letter %s at %d,%d; dir %s\n", target, string(c), row, col, dir)
+	found := 0
 
 	if target[0] != byte(c) {
-		return false
+		return 0
 	}
 
 	if len(target) == 1 && target[0] == byte(c) {
-		return true
+		return 1
 	}
 
 	neighbors := neighbors(row, col, crossword)
@@ -125,10 +142,7 @@ func search(target string, c rune, row, col int, dir direction, crossword []stri
 	if dir == unknown {
 		// search all neighbors and set a direction to follow if next is found
 		for _, n := range neighbors {
-			res := search(target[1:], n.c, n.row, n.col, n.dir, crossword)
-			if res {
-				return res
-			}
+			found += search(target[1:], n.c, n.row, n.col, n.dir, crossword)
 		}
 	}
 
@@ -139,7 +153,7 @@ func search(target string, c rune, row, col int, dir direction, crossword []stri
 	}
 
 	// Couldn't find anymore neighbors to search
-	return false
+	return found
 }
 
 // func next(c rune) rune {
@@ -201,4 +215,17 @@ func neighborByDir(neighbors []neighbor, dir direction) *neighbor {
 	}
 
 	return nil
+}
+
+func isCrossMas(row, col int, mat crossword) bool {
+	// Eliminate borders
+	if row == 0 || row == len(mat)-1 || col == 0 || col == len(mat[0])-1 {
+		return false
+	}
+	fmt.Printf("searching at %d,%d\n", row, col)
+
+	hasBackCross := (mat.at(row, col, leftup) == 'M' && mat.at(row, col, rightdown) == 'S') || (mat.at(row, col, leftup) == 'S' && mat.at(row, col, rightdown) == 'M')
+	hasForwardCross := (mat.at(row, col, rightup) == 'M' && mat.at(row, col, leftdown) == 'S') || (mat.at(row, col, rightup) == 'S' && mat.at(row, col, leftdown) == 'M')
+
+	return hasBackCross && hasForwardCross
 }

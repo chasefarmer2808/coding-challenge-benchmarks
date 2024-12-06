@@ -63,13 +63,13 @@ var days2024 = []Day{
 		parts: []Part{
 			{
 				partFunc:        day04.Part1,
-				expectedVal:     0,
+				expectedVal:     2718,
 				expectedTestVal: 18,
 			},
 			{
 				partFunc:        day04.Part2,
-				expectedVal:     0,
-				expectedTestVal: 0,
+				expectedVal:     2046,
+				expectedTestVal: 9,
 			},
 		},
 	},
@@ -94,5 +94,5 @@ func Test2024Day03(t *testing.T) {
 }
 
 func Test2024Day04(t *testing.T) {
-	RunDay(days2024[3], 4, true, t)
+	RunDay(days2024[3], 4, false, t)
 }
