@@ -156,19 +156,6 @@ func search(target string, c rune, row, col int, dir direction, crossword []stri
 	return found
 }
 
-// func next(c rune) rune {
-// 	switch c {
-// 	case 'X':
-// 		return 'M'
-// 	case 'M':
-// 		return 'A'
-// 	case 'A':
-// 		return 'S'
-// 	default:
-// 		return ' '
-// 	}
-// }
-
 type neighbor struct {
 	c   rune
 	row int
