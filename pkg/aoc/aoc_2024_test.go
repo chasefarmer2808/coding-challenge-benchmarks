@@ -85,8 +85,8 @@ var days2024 = []Day{
 			},
 			{
 				partFunc:        day05.Part2,
-				expectedVal:     0,
-				expectedTestVal: 0,
+				expectedVal:     4681,
+				expectedTestVal: 123,
 			},
 		},
 	},

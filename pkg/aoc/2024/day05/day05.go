@@ -33,23 +33,56 @@ func Part1(f *os.File) int64 {
 
 	ruleMap := buildRuleMap(rules)
 	fmt.Printf("rule map %+v\n", ruleMap)
-outer:
 	for _, u := range updates {
 		fmt.Printf("checking %+v\n", u)
-		for i, currUpdate := range u {
-			if !isOrdered(currUpdate, u[i+1:], ruleMap) {
-				continue outer
-			}
+		if slices.IsSortedFunc(u, func(a, b int) int {
+			return ruleCompare(a, b, ruleMap)
+		}) {
+			fmt.Println("ordered!")
+			midSum += int64(getMid(u))
 		}
-		fmt.Println("ordered!")
-		midSum += int64(getMid(u))
 	}
 
 	return midSum
 }
 
 func Part2(f *os.File) int64 {
-	return 0
+	var midSum int64
+	var rules []string
+	var updates [][]int
+
+	for l := range input.Lines(f) {
+		if strings.Contains(l, "|") {
+			rules = append(rules, l)
+			continue
+		}
+
+		if strings.Contains(l, ",") {
+			var currUpdates []int
+			tokens := strings.Split(l, ",")
+			for _, t := range tokens {
+				n, _ := strconv.Atoi(t)
+				currUpdates = append(currUpdates, n)
+			}
+			updates = append(updates, currUpdates)
+		}
+	}
+
+	ruleMap := buildRuleMap(rules)
+
+	for _, u := range updates {
+		if !slices.IsSortedFunc(u, func(a, b int) int {
+			return ruleCompare(a, b, ruleMap)
+		}) {
+			slices.SortFunc(u, func(a, b int) int {
+				return ruleCompare(a, b, ruleMap)
+			})
+
+			midSum += int64(getMid(u))
+		}
+	}
+
+	return midSum
 }
 
 func buildRuleMap(rules []string) map[int][]int {
@@ -76,21 +109,16 @@ func buildRuleMap(rules []string) map[int][]int {
 	return rm
 }
 
-func isOrdered(n int, updates []int, ruleMap map[int][]int) bool {
-	rules := ruleMap[n]
-	fmt.Printf("checking %d with updates %+v and rules %+v\n", n, updates, rules)
-
-	if len(updates) == 0 {
-		return true
-	}
-
-	for _, u := range updates {
-		if !slices.Contains(rules, u) {
-			return false
+func ruleCompare(a, b int, ruleMap map[int][]int) int {
+	return func(a, b int) int {
+		if a == b {
+			return 0
 		}
-	}
-
-	return true
+		if slices.Contains(ruleMap[a], b) {
+			return -1
+		}
+		return 1
+	}(a, b)
 }
 
 func getMid(nums []int) int {
