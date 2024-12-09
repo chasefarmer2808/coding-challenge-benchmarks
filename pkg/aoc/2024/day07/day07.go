@@ -2,7 +2,6 @@ package day07
 
 import (
 	"coding-challenge-runner/pkg/input"
-	"fmt"
 	"math"
 	"os"
 	"runtime"
@@ -24,7 +23,7 @@ func Part1(f *os.File) int64 {
 			operands = append(operands, n)
 		}
 
-		if isPossible(testVal, operands) {
+		if isPossible(testVal, operands, 2) {
 			sum += testVal
 		}
 	}
@@ -33,14 +32,32 @@ func Part1(f *os.File) int64 {
 }
 
 func Part2(f *os.File) int64 {
-	return 0
+	var sum int64 = 0
+	var testVal int64
+
+	for l := range input.Lines(f) {
+		var operands []int64
+		tokens := strings.Split(l, ":")
+		testVal, _ = strconv.ParseInt(tokens[0], 10, 64)
+		tokens = strings.Split(strings.Trim(tokens[1], " "), " ")
+		for _, t := range tokens {
+			n, _ := strconv.ParseInt(t, 10, 64)
+			operands = append(operands, n)
+		}
+
+		if isPossible(testVal, operands, 3) {
+			sum += testVal
+		}
+	}
+
+	return sum
 }
 
-func isPossible(target int64, operands []int64) bool {
+func isPossible(target int64, operands []int64, base int) bool {
 	numOperators := len(operands) - 1
-	combos := getOpCombos(numOperators)
-	jobChan := make(chan evalJob, len(combos))
-	resChan := make(chan int64, len(combos))
+	numCombos := int(math.Pow(float64(base), float64(numOperators)))
+	jobChan := make(chan evalJob, numCombos)
+	resChan := make(chan int64, numCombos)
 	defer close(jobChan)
 	parallelism := runtime.NumCPU()
 
@@ -48,46 +65,23 @@ func isPossible(target int64, operands []int64) bool {
 		go worker(jobChan, resChan)
 	}
 
-	for _, c := range combos {
-		fmt.Printf("spawning worker for %+v with ops %+v\n", operands, c)
-		jobChan <- evalJob{c, operands}
+	for i := 0; i < numCombos; i++ {
+		operations := intToOperations(int64(i), numOperators, base)
+		jobChan <- evalJob{operations, operands}
 	}
 
-	for i := 0; i < len(combos); i++ {
+	for i := 0; i < numCombos; i++ {
 		if <-resChan == target {
+			// TODO stop jobs early here
 			return true
 		}
 	}
 	return false
 }
 
-func getOpCombos(n int) []string {
-	ops := []string{"+", "*"}
-	numCombos := int(math.Pow(float64(len(ops)), float64(n)))
-	combos := make([]string, numCombos)
-	fmtStr := "%0" + strconv.Itoa(n) + "b"
-
-	var bitSet int64
-
-	for {
-		if bitSet == int64(numCombos) {
-			break
-		}
-
-		currCombo := ""
-		for _, b := range fmt.Sprintf(fmtStr, bitSet) {
-			switch b {
-			case '0':
-				currCombo += "+"
-			case '1':
-				currCombo += "*"
-			}
-		}
-		combos[bitSet] = currCombo
-		bitSet++
-	}
-
-	return combos
+func intToOperations(n int64, size, base int) string {
+	binStr := strconv.FormatInt(n, base)
+	return strings.Repeat("0", size-len(binStr)) + binStr
 }
 
 type evalJob struct {
@@ -102,14 +96,17 @@ func worker(jobs <-chan evalJob, results chan<- int64) {
 }
 
 func eval(job evalJob) int64 {
-	fmt.Printf("evaluating %+v\n", job)
 	var res int64 = job.operands[0]
 	for i := 0; i < len(job.operands)-1; i++ {
 		switch job.operations[i] {
-		case '+':
+		case '0': // add
 			res += job.operands[i+1]
-		case '*':
+		case '1': // mul
 			res *= job.operands[i+1]
+		case '2': // concat
+			rs := strconv.FormatInt(res, 10)
+			ns := strconv.FormatInt(job.operands[i+1], 10)
+			res, _ = strconv.ParseInt(rs+ns, 10, 64)
 		}
 	}
 
