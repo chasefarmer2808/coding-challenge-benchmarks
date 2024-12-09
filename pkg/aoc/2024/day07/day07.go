@@ -2,6 +2,7 @@ package day07
 
 import (
 	"coding-challenge-runner/pkg/input"
+	"context"
 	"math"
 	"os"
 	"runtime"
@@ -57,12 +58,16 @@ func isPossible(target int64, operands []int64, base int) bool {
 	numOperators := len(operands) - 1
 	numCombos := int(math.Pow(float64(base), float64(numOperators)))
 	jobChan := make(chan evalJob, numCombos)
-	resChan := make(chan int64, numCombos)
+	resChan := make(chan bool)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	defer close(jobChan)
 	parallelism := runtime.NumCPU()
 
 	for i := 0; i < parallelism; i++ {
-		go worker(jobChan, resChan)
+		go func() {
+			worker(ctx, jobChan, resChan, target)
+		}()
 	}
 
 	for i := 0; i < numCombos; i++ {
@@ -71,8 +76,8 @@ func isPossible(target int64, operands []int64, base int) bool {
 	}
 
 	for i := 0; i < numCombos; i++ {
-		if <-resChan == target {
-			// TODO stop jobs early here
+		if <-resChan {
+			cancel()
 			return true
 		}
 	}
@@ -89,9 +94,14 @@ type evalJob struct {
 	operands   []int64
 }
 
-func worker(jobs <-chan evalJob, results chan<- int64) {
+func worker(ctx context.Context, jobs <-chan evalJob, results chan<- bool, target int64) {
 	for j := range jobs {
-		results <- eval(j)
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			results <- eval(j) == target
+		}
 	}
 }
 
