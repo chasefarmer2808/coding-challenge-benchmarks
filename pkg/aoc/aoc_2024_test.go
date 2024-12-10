@@ -8,6 +8,7 @@ import (
 	"coding-challenge-runner/pkg/aoc/2024/day05"
 	"coding-challenge-runner/pkg/aoc/2024/day06"
 	"coding-challenge-runner/pkg/aoc/2024/day07"
+	"coding-challenge-runner/pkg/aoc/2024/day08"
 	"testing"
 )
 
@@ -124,6 +125,22 @@ var days2024 = []Day{
 			},
 		},
 	},
+	{
+		inputFile:     "./2024/day08/input.txt",
+		testInputFile: "./2024/day08/test_input.txt",
+		parts: []Part{
+			{
+				partFunc:        day08.Part1,
+				expectedVal:     426,
+				expectedTestVal: 14,
+			},
+			{
+				partFunc:        day08.Part2,
+				expectedVal:     0,
+				expectedTestVal: 0,
+			},
+		},
+	},
 }
 
 func Test2024(t *testing.T) {
@@ -158,4 +175,8 @@ func Test2024Day06(t *testing.T) {
 
 func Test2024Day07(t *testing.T) {
 	RunDay(days2024[6], 7, false, t)
+}
+
+func Test2024Day08(t *testing.T) {
+	RunDay(days2024[7], 8, false, t)
 }
