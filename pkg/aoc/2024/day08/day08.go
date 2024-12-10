@@ -19,6 +19,14 @@ type coord struct {
 }
 
 func Part1(f *os.File) int64 {
+	return solve(f, 1, false)
+}
+
+func Part2(f *os.File) int64 {
+	return solve(f, 1000, true)
+}
+
+func solve(f *os.File, limit int, includePairs bool) int64 {
 	var sigMap [][]location
 	freqMap := make(map[rune][]coord)
 
@@ -44,7 +52,7 @@ func Part1(f *os.File) int64 {
 	antiNodesMap := make(map[coord]int)
 
 	for freq, coords := range freqMap {
-		antiNodes := getAntiNodes(freq, coords, sigMap)
+		antiNodes := getAntiNodes(freq, coords, sigMap, limit, includePairs)
 		fmt.Printf("freq %s has nodes %+v\n", string(freq), antiNodes)
 		for _, node := range antiNodes {
 			_, ok := antiNodesMap[node]
@@ -59,11 +67,7 @@ func Part1(f *os.File) int64 {
 	return int64(len(antiNodesMap))
 }
 
-func Part2(f *os.File) int64 {
-	return 0
-}
-
-func getAntiNodes(freq rune, freqCoords []coord, sigMap [][]location) []coord {
+func getAntiNodes(freq rune, freqCoords []coord, sigMap [][]location, limit int, includePairs bool) []coord {
 	mapSize := len(sigMap)
 	var coords []coord
 
@@ -77,35 +81,44 @@ func getAntiNodes(freq rune, freqCoords []coord, sigMap [][]location) []coord {
 	for _, p := range pairs {
 		p1 := p[0]
 		p2 := p[1]
+		if includePairs {
+			coords = append(coords, p1, p2)
+		}
 
 		dx := int(math.Abs(float64(p1.col - p2.col)))
 		dy := int(math.Abs(float64(p1.row - p2.row)))
 
-		currCoord := coord{}
-		if p1.row < p2.row {
-			if p1.col > p2.col {
-				// up and right
-				currCoord.row = p1.row - dy
-				currCoord.col = p1.col + dx
+		currCoord := p1
+		for i := 0; i < limit; i++ {
+			if p1.row < p2.row {
+				if p1.col > p2.col {
+					// up and right
+					currCoord.row -= dy
+					currCoord.col += dx
+				} else {
+					// up and left
+					currCoord.row -= dy
+					currCoord.col -= dx
+				}
 			} else {
-				// up and left
-				currCoord.row = p1.row - dy
-				currCoord.col = p1.col - dx
+				if p1.col > p2.col {
+					// down and right
+					currCoord.row += dy
+					currCoord.col += dx
+				} else {
+					// down and left
+					currCoord.row += dy
+					currCoord.col -= dx
+				}
 			}
-		} else {
-			if p1.col > p2.col {
-				// down and right
-				currCoord.row = p1.row + dy
-				currCoord.col = p1.col + dx
-			} else {
-				// down and left
-				currCoord.row = p1.row + dy
-				currCoord.col = p1.col - dx
-			}
-		}
 
-		if currCoord.row >= 0 && currCoord.row < mapSize && currCoord.col >= 0 && currCoord.col < mapSize {
-			coords = append(coords, currCoord)
+			if currCoord.row < 0 || currCoord.row >= mapSize || currCoord.col < 0 || currCoord.col >= mapSize {
+				break
+			}
+
+			if currCoord.row >= 0 && currCoord.row < mapSize && currCoord.col >= 0 && currCoord.col < mapSize {
+				coords = append(coords, currCoord)
+			}
 		}
 	}
 
