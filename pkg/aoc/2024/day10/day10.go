@@ -31,6 +31,34 @@ func (c coord) adjacentSteps(tm [][]int) []coord {
 }
 
 func Part1(f *os.File) int64 {
+	trailHeads, trailMap := parseInput(f)
+
+	scoreSum := 0
+	for _, th := range trailHeads {
+		summitMap := make(map[coord]int)
+		summitMap = getTrailScore(th, trailMap, summitMap)
+		scoreSum += len(summitMap)
+	}
+
+	return int64(scoreSum)
+}
+
+func Part2(f *os.File) int64 {
+	trailHeads, trailMap := parseInput(f)
+
+	ratingSum := 0
+	for _, th := range trailHeads {
+		summitMap := make(map[coord]int)
+		summitMap = getTrailScore(th, trailMap, summitMap)
+		for _, s := range summitMap {
+			ratingSum += s
+		}
+	}
+
+	return int64(ratingSum)
+}
+
+func parseInput(f *os.File) ([]coord, [][]int) {
 	var trailMap [][]int
 	var trailHeads []coord
 
@@ -47,19 +75,7 @@ func Part1(f *os.File) int64 {
 		trailMap = append(trailMap, tops)
 		i++
 	}
-
-	scoreSum := 0
-	for _, th := range trailHeads {
-		summitMap := make(map[coord]int)
-		summitMap = getTrailScore(th, trailMap, summitMap)
-		scoreSum += len(summitMap)
-	}
-
-	return int64(scoreSum)
-}
-
-func Part2(f *os.File) int64 {
-	return 0
+	return trailHeads, trailMap
 }
 
 func getTrailScore(th coord, tm [][]int, summitMap map[coord]int) map[coord]int {
