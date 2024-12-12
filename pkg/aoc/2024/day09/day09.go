@@ -166,15 +166,7 @@ func packFiles(groups []blockGroup) []blockGroup {
 				break
 			}
 		}
-		// g := groups[j]
-		// if g.isEmpty() {
-		// 	continue
-		// }
-		// _, ok := visited[g.id]
-		// if ok {
-		// 	continue
-		// }
-		// visited[g.id] = 1
+
 		// look for empty space starting from left
 		for i, g2 := range groups {
 			if i > k {
